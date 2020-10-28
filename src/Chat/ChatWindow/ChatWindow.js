@@ -3,6 +3,7 @@ import React from 'react';
 import Message from './Message/Message';
 
 const ChatWindow = (props) => {
+    console.log('propsChat', props.chat)
     const chat = props.chat
         .map(m => <Message 
             key={Date.now() * Math.random()}
