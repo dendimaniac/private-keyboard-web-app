@@ -8,22 +8,17 @@ import ChatInput from "./ChatInput/ChatInput";
 const Chat = () => {
   const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
-
   latestChat.current = chat;
-  console.log("latestChat", chat);
-
   useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl("http://localhost:7071/api")
       .withAutomaticReconnect()
       .build();
-
     connection
       .start()
       .then((result) => {
         console.log("Connected!");
-
-        connection.on("ReceiveMessage", (message) => {
+        connection.on("newMessage", (message) => {
           console.log("ReceiveMessage", message);
           const updatedChat = [...latestChat.current];
           updatedChat.push(message);
@@ -32,13 +27,11 @@ const Chat = () => {
       })
       .catch((e) => console.log("Connection failed: ", e));
   }, []);
-
   const sendMessage = async (user, message) => {
     const chatMessage = {
       user: user,
       message: message,
     };
-
     try {
       return await axios.post("http://localhost:7071/api/messages", {
         sender: chatMessage.user,
@@ -48,7 +41,6 @@ const Chat = () => {
       console.log("Sending message failed.", e);
     }
   };
-
   return (
     <div>
       <ChatInput sendMessage={sendMessage} />
