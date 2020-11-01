@@ -1,24 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
+import queryString from "query-string";
 
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 
+const FunctionURL =
+  process.env.NODE_ENV === "development"
+    ? process.env.REACT_APP_DEVELOPMENT_FUNCTION
+    : process.env.REACT_APP_PRODUCTION_FUNCTION;
+
 const Chat = () => {
   const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
-
-  const FunctionURL =
-    process.env.NODE_ENV === "development"
-      ? process.env.REACT_APP_DEVELOPMENT_FUNCTION
-      : process.env.REACT_APP_PRODUCTION_FUNCTION;
+  const location = useLocation();
+  const query = queryString.parse(location.search);
 
   latestChat.current = chat;
   useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl(`${FunctionURL}`)
-      .withAutomaticReconnect()
       .build();
 
     connection.on("newMessage", (message) => {
@@ -32,30 +35,45 @@ const Chat = () => {
       .start()
       .then(() => {
         console.log("Connected!");
+        if (query.uuid) {
+          axios.post(`${FunctionURL}/confirmqrscan`, { uuid: query.uuid });
+        }
       })
       .catch((e) => console.log("Connection failed: ", e));
-  }, [FunctionURL]);
+  }, []);
 
   const sendMessage = async (user, message) => {
-    const chatMessage = {
-      user: user,
-      message: message,
-    };
     try {
       return await axios.post(`${FunctionURL}/messages`, {
-        sender: chatMessage.user,
-        text: chatMessage.message,
+        sender: user,
+        text: message,
+        uuid: query.uuid,
       });
     } catch (e) {
       console.log("Sending message failed.", e);
     }
   };
+
+  const DisplayInputs = () => {
+    const inputArray = Array.from(Array(Number(query.amount)));
+    return inputArray.map((_, index) => {
+      return <ChatInput key={index} sendMessage={sendMessage} />;
+    });
+  };
+
+  const hasEnoughRequiredQuery =
+    query.amount && Number(query.amount) > 0 && query.uuid;
+
   return (
-    <div>
-      <ChatInput sendMessage={sendMessage} />
-      <hr />
-      <ChatWindow chat={chat} />
-    </div>
+    <>
+      {hasEnoughRequiredQuery && (
+        <div>
+          <DisplayInputs />
+          <hr />
+          <ChatWindow chat={chat} />
+        </div>
+      )}
+    </>
   );
 };
 
