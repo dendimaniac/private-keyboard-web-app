@@ -19,6 +19,7 @@ jobs:
         with:
           submodules: true
       - run: npm install
+      - run: npm audit fix
       - run: touch .env | echo "${{ secrets.PRODUCTION_FUNCTION_URL }}" >> .env
       - run: npm run build
       - name: Deploy
