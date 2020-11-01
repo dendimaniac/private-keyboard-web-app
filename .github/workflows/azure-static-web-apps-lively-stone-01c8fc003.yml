@@ -19,7 +19,7 @@ jobs:
         with:
           submodules: true
       - run: npm install
-      - run: touch .env | echo "REACT_APP_PRODUCTION_FUNCTION = ${{ secrets.PRODUCTION_FUNCTION_URL }}" >> .env
+      - run: touch .env | echo "${{ secrets.PRODUCTION_FUNCTION_URL }}" >> .env
       - run: npm run build
       - name: Deploy
         id: builddeploy
