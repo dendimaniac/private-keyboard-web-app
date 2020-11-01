@@ -40,7 +40,7 @@ const Chat = () => {
         }
       })
       .catch((e) => console.log("Connection failed: ", e));
-  }, []);
+  }, [query.uuid]);
 
   const sendMessage = async (user, message) => {
     try {
