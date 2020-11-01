@@ -9,7 +9,7 @@ const FunctionURL = "https://privatekeyboard.azurewebsites.net/api";
 const Chat = () => {
   const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
-  
+
   latestChat.current = chat;
   useEffect(() => {
     const connection = new HubConnectionBuilder()
