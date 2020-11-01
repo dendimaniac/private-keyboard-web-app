@@ -5,10 +5,14 @@ import axios from "axios";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 
-const FunctionURL = "https://privatekeyboard.azurewebsites.net/api";
 const Chat = () => {
   const [chat, setChat] = useState([]);
   const latestChat = useRef(null);
+
+  const FunctionURL =
+    process.env.NODE_ENV === "development"
+      ? process.env.REACT_APP_DEVELOPMENT_FUNCTION
+      : process.env.REACT_APP_PRODUCTION_FUNCTION;
 
   latestChat.current = chat;
   useEffect(() => {
@@ -30,7 +34,7 @@ const Chat = () => {
         console.log("Connected!");
       })
       .catch((e) => console.log("Connection failed: ", e));
-  }, []);
+  }, [FunctionURL]);
 
   const sendMessage = async (user, message) => {
     const chatMessage = {
