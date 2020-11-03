@@ -1,6 +1,6 @@
 import React from "react";
 
-import Message from "./Message";
+import Message from "./Message/Message";
 
 const ChatWindow = (props) => {
   console.log("propsChat", props.chat);

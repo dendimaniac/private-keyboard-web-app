@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { HubConnectionBuilder } from "@microsoft/signalr";
+import React, {useEffect} from "react";
+import {HubConnectionBuilder} from "@microsoft/signalr";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import queryString from "query-string";
 
-import ChatWindow from "./ChatWindow";
-import ChatInput from "./ChatInput";
+import ChatInput from "./ChatInput/ChatInput";
 
 const FunctionURL =
   process.env.NODE_ENV === "development"
@@ -13,30 +12,25 @@ const FunctionURL =
     : process.env.REACT_APP_PRODUCTION_FUNCTION;
 
 const Chat = () => {
-  const [chat, setChat] = useState([]);
-  const latestChat = useRef(null);
   const location = useLocation();
   const query = queryString.parse(location.search);
 
-  latestChat.current = chat;
   useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl(`${FunctionURL}`)
+      .withAutomaticReconnect()
       .build();
 
     connection.on("newMessage", (message) => {
       console.log("ReceiveMessage", message);
-      const updatedChat = [...latestChat.current];
-      updatedChat.push(message);
-      setChat(updatedChat);
     });
 
     connection
       .start()
-      .then(() => {
+      .then((res) => {
         console.log("Connected!");
         if (query.uuid) {
-          axios.post(`${FunctionURL}/confirmqrscan`, { uuid: query.uuid });
+          axios.post(`${FunctionURL}/confirmqrscan`, {uuid: query.uuid});
         }
       })
       .catch((e) => console.log("Connection failed: ", e));
@@ -55,9 +49,12 @@ const Chat = () => {
   };
 
   const DisplayInputs = () => {
-    const inputArray = Array.from(Array(Number(query.amount)));
-    return inputArray.map((_, index) => {
-      return <ChatInput key={index} sendMessage={sendMessage} />;
+    let inputArray = Array.from(Array(Number(query.amount)));
+    inputArray = inputArray.map(el => {
+      return {label: "First name", type: "text"}
+    })
+    return inputArray.map((input, index) => {
+      return <ChatInput input={input} key={index} sendMessage={sendMessage} />;
     });
   };
 
@@ -68,9 +65,9 @@ const Chat = () => {
     <>
       {hasEnoughRequiredQuery && (
         <div>
+          <h1>Connected!</h1>
           <DisplayInputs />
           <hr />
-          <ChatWindow chat={chat} />
         </div>
       )}
     </>
