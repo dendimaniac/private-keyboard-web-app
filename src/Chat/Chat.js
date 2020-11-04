@@ -3,7 +3,7 @@ import {HubConnectionBuilder} from "@microsoft/signalr";
 import axios from "axios";
 import {useLocation} from "react-router-dom";
 import queryString from "query-string";
-
+import * as CryptoJS from 'crypto-js';
 import ChatInput from "./ChatInput/ChatInput";
 
 const FunctionURL =
@@ -15,7 +15,32 @@ const Chat = () => {
   const location = useLocation();
   const query = queryString.parse(location.search);
 
+  //For testing decrypting text 
+
+  //Get key
+  const base64EncodedKeyFromJava = 'UFJJVkFURUtFWUJPQVJEUw=='; /* copied from output of Java program  */
+  const keyForCryptoJS = CryptoJS.enc.Base64.parse(base64EncodedKeyFromJava);
+
+  const encryptedText = "urbSIru7CCYcgRbktMYtpxHFuoHNWmC2BbI36LxwSEY=";
+  const decodeBase64 = CryptoJS.enc.Base64.parse(encryptedText);
+
+  const decryptedData = CryptoJS.AES.decrypt(
+    {
+      ciphertext: decodeBase64
+    },
+    keyForCryptoJS,
+    {
+      mode: CryptoJS.mode.ECB /* Override the defaults */
+      /*padding: CryptoJS.pad.Pkcs7 *//* PKCS#5 is a subset of PKCS#7, and */
+    }
+  );
+
+  const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
+
   useEffect(() => {
+    // Console result of decrypting
+    console.log("Result: ", decryptedText);
+
     const connection = new HubConnectionBuilder()
       .withUrl(`${FunctionURL}`)
       .withAutomaticReconnect()
