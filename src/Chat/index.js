@@ -1,9 +1,9 @@
-import React, {useEffect} from "react";
-import {HubConnectionBuilder} from "@microsoft/signalr";
+import React, { useEffect } from "react";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import axios from "axios";
-import {useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import queryString from "query-string";
-import * as CryptoJS from "crypto-js";
+import CryptoJS from "crypto-js";
 import ChatInput from "./ChatInput";
 
 const FunctionURL =
@@ -13,12 +13,13 @@ const FunctionURL =
 
 const Chat = () => {
   const location = useLocation();
-  const query = queryString.parse(location.search);
-  console.log("query", query);
+  const query = queryString.parse(location.search, { decode: false });
+  console.log("query", query.settings);
 
   useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl(`${FunctionURL}`)
+      .configureLogging(LogLevel.Information)
       .withAutomaticReconnect()
       .build();
 
@@ -28,21 +29,21 @@ const Chat = () => {
 
     connection
       .start()
-      .then((res) => {
+      .then(() => {
         console.log("Connected!");
         if (query.uuid) {
-          axios.post(`${FunctionURL}/confirmqrscan`, {uuid: query.uuid});
+          axios.post(`${FunctionURL}/confirmqrscan`, { uuid: query.uuid });
         }
       })
       .catch((e) => console.log("Connection failed: ", e));
   }, [query.uuid]);
 
-  const sendMessage = async (user, message) => {
+  const sendMessage = async (position, message) => {
     try {
       return await axios.post(`${FunctionURL}/messages`, {
-        sender: user,
+        sender: query.uuid,
+        targetInput: position,
         text: message,
-        uuid: query.uuid,
       });
     } catch (e) {
       console.log("Sending message failed.", e);
@@ -50,15 +51,10 @@ const Chat = () => {
   };
 
   const DisplayInputs = () => {
-    //Get key to dercrypt
-    const base64EncodedKeyFromJava =
-      "UFJJVkFURUtFWUJPQVJEUw=="; /* copied from output of Java program  */
-    const keyForCryptoJS = CryptoJS.enc.Base64.parse(base64EncodedKeyFromJava);
-
-    //Get encrypt text to dercypt
-    const encryptedText =
-      "x94QNnworCdhvE5+XLrQliup+F3Cu3iT8As3ja2tlFVhN3/TZHvxU6WT2qfL6wVAPOnV5DQ3RX3lDjen4LFzMptM3VHFaEjXByD1guL3qlJIG7Wnb1CDZvq4VlPtpRpftnlizs5lc/cGA/AH3M5XrCnD/g7z30I896Lq9j6XHoysFMNZgb9I9/ei4+MYrHbWS4WJwoHbhQM0aHdKif7Fq+VGmt97r0GeXPPJvfeihRA=";
-    const decodeBase64 = CryptoJS.enc.Base64.parse(encryptedText);
+    const keyForCryptoJS = CryptoJS.enc.Base64.parse(
+      "UFJJVkFURUtFWUJPQVJEUw=="
+    );
+    const decodeBase64 = CryptoJS.enc.Base64.parse(query.settings);
 
     const decryptedData = CryptoJS.AES.decrypt(
       {
@@ -73,14 +69,19 @@ const Chat = () => {
     const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
     const inputArray = JSON.parse(decryptedText);
 
-    return inputArray.map((input, index) => {
-      return <ChatInput input={input} key={index} sendMessage={sendMessage} />;
+    return inputArray.map((inputSetting, index) => {
+      return (
+        <ChatInput
+          inputSetting={inputSetting}
+          key={index}
+          position={index}
+          sendMessage={sendMessage}
+        />
+      );
     });
-
   };
 
-  const hasEnoughRequiredQuery =
-    query.amount && Number(query.amount) > 0 && query.uuid;
+  const hasEnoughRequiredQuery = query.settings && query.uuid;
 
   return (
     <>

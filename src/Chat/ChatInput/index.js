@@ -1,8 +1,7 @@
 import React from "react";
-import './ChatInput.css';
+import "./ChatInput.css";
 
-const ChatInput = (props) => {
-  const {label, type} = props.input;
+const ChatInput = ({ inputSetting, sendMessage, position }) => {
   let message = "";
   let timer = null;
 
@@ -12,16 +11,17 @@ const ChatInput = (props) => {
       clearTimeout(timer);
     }
     timer = setTimeout(() => {
-      props.sendMessage("#UserName", message);
+      sendMessage(position, message);
     }, 250);
   };
 
   return (
     <div className="form-input">
-      <div className="label-input" >{label}:</div>
+      <div className="label-input">{inputSetting.label}:</div>
       <input
         className="input-message"
-        type={type}
+        type={inputSetting.type}
+        placeholder={inputSetting.placeholder}
         id={Math.random()}
         name="message"
         onChange={(e) => {
