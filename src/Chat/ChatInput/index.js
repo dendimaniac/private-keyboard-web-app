@@ -1,44 +1,34 @@
-import React, { useState } from "react";
+import React from "react";
+import "./ChatInput.css";
 
-const ChatInput = (props) => {
-  const [user, setUser] = useState("");
-  const [message, setMessage] = useState("");
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const isUserProvided = user && user !== "";
-    const isMessageProvided = message && message !== "";
+const ChatInput = ({ inputSetting, sendMessage, position }) => {
+  let message = "";
+  let timer = null;
 
-    if (isUserProvided && isMessageProvided) {
-      props.sendMessage(user, message);
-    } else {
-      alert("Please insert an user and a message.");
-    }
-  };
-  const onUserUpdate = (e) => {
-    setUser(e.target.value);
-  };
   const onMessageUpdate = (e) => {
-    setMessage(e.target.value);
+    message = e.target.value;
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      sendMessage(position, message);
+    }, 250);
   };
+
   return (
-    <form onSubmit={onSubmit}>
-      <label htmlFor="user">User:</label>
-      <br />
-      <input id="user" name="user" value={user} onChange={onUserUpdate} />
-      <br />
-      <label htmlFor="message">Message:</label>
-      <br />
+    <div className="form-input">
+      <div className="label-input">{inputSetting.label}:</div>
       <input
-        type="text"
-        id="message"
+        className="input-message"
+        type={inputSetting.type}
+        placeholder={inputSetting.placeholder}
+        id={Math.random()}
         name="message"
-        value={message}
-        onChange={onMessageUpdate}
+        onChange={(e) => {
+          onMessageUpdate(e);
+        }}
       />
-      <br />
-      <br />
-      <button>Submit</button>
-    </form>
+    </div>
   );
 };
 

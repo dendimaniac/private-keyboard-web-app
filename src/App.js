@@ -1,9 +1,12 @@
 import React from "react";
+import './App.css';
 import Chat from "./Chat";
 
-function App() {
+const App = () => {
+  console.log(process.env.REACT_APP_PRODUCTION_FUNCTION);
+
   return (
-    <div style={{ margin: "0 30%" }}>
+    <div className="App" >
       <Chat />
     </div>
   );
