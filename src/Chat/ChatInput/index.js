@@ -13,7 +13,7 @@ const ChatInput = (props) => {
     }
     timer = setTimeout(() => {
       props.sendMessage("#UserName", message);
-    }, 1000);
+    }, 250);
   };
 
   return (
