@@ -15,19 +15,36 @@ const ChatInput = ({ inputSetting, sendMessage, position }) => {
     }, 250);
   };
 
+  console.log("inputSetting", inputSetting);
+
   return (
     <div className="form-input">
       <div className="label-input">{inputSetting.label}:</div>
-      <input
-        className="input-message"
-        type={inputSetting.type}
-        placeholder={inputSetting.placeholder}
-        id={Math.random()}
-        name="message"
-        onChange={(e) => {
-          onMessageUpdate(e);
-        }}
-      />
+      {inputSetting.type !== "tel" && (
+        <input
+          className="input-message"
+          type={inputSetting.type}
+          placeholder={inputSetting.placeholder}
+          id={Math.random()}
+          name="message"
+          onChange={(e) => {
+            onMessageUpdate(e);
+          }}
+        />
+      )}
+      {inputSetting.type === "tel" && (
+        <input
+          className="input-message"
+          type="number"
+          maxLength="10"
+          placeholder={inputSetting.placeholder}
+          id={Math.random()}
+          name="message"
+          onChange={(e) => {
+            onMessageUpdate(e);
+          }}
+        />
+      )}
     </div>
   );
 };
