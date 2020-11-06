@@ -14,9 +14,7 @@ const ChatInput = ({ inputSetting, sendMessage, position }) => {
       sendMessage(position, message);
     }, 250);
   };
-
   console.log("inputSetting", inputSetting);
-
   return (
     <div className="form-input">
       <div className="label-input">{inputSetting.label}:</div>
@@ -35,7 +33,7 @@ const ChatInput = ({ inputSetting, sendMessage, position }) => {
       {inputSetting.type === "tel" && (
         <input
           className="input-message"
-          type="number"
+          type="tel"
           maxLength="10"
           placeholder={inputSetting.placeholder}
           id={Math.random()}
