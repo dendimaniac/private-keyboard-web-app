@@ -50,6 +50,21 @@ const Chat = () => {
     }
   };
 
+  const sendRadioButtonChecked = async (
+    targetRadioGroup,
+    targetRadioButton
+  ) => {
+    try {
+      return await axios.post(`${FunctionURL}/radiogroup`, {
+        sender: query.uuid,
+        targetRadioGroup: targetRadioGroup,
+        targetRadioButton: targetRadioButton,
+      });
+    } catch (e) {
+      console.log("Sending message failed.", e);
+    }
+  };
+
   const DisplayInputs = () => {
     const keyForCryptoJS = CryptoJS.enc.Base64.parse(
       "UFJJVkFURUtFWUJPQVJEUw=="
@@ -68,6 +83,7 @@ const Chat = () => {
 
     const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
     const inputArray = JSON.parse(decryptedText);
+    console.log(inputArray);
 
     return inputArray.map((inputSetting, index) => {
       return (
@@ -76,6 +92,7 @@ const Chat = () => {
           key={index}
           position={index}
           sendMessage={sendMessage}
+          sendRadioButtonChecked={sendRadioButtonChecked}
         />
       );
     });
@@ -85,26 +102,6 @@ const Chat = () => {
 
   return (
     <>
-      {/* used for testing, will remove these commented code later */}
-    //   {/*
-    //   <div className="radio-input">
-    //     <p>Select a maintenance drone:</p>
-    //     <div>
-    //       <input type="radio" id="huey" name="drone" value="huey" />
-    //       <label for="huey">Huey</label>
-    //     </div>
-
-    //     <div>
-    //       <input type="radio" id="dewey" name="drone" value="dewey" />
-    //       <label for="dewey">Dewey</label>
-    //     </div>
-
-    //     <div>
-    //       <input type="radio" id="louie" name="drone" value="louie" />
-    //       <label for="louie">Louie</label>
-    //     </div>
-    // </div>
-    // */}
       {hasEnoughRequiredQuery && (
         <div>
           <h1>Connected!</h1>
