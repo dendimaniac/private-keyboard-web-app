@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
-import { HubConnectionBuilder } from "@microsoft/signalr";
+import React, { useEffect } from "react";
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import queryString from "query-string";
-
-import ChatWindow from "./ChatWindow";
+import CryptoJS from "crypto-js";
 import ChatInput from "./ChatInput";
 
 const FunctionURL =
@@ -13,22 +12,19 @@ const FunctionURL =
     : process.env.REACT_APP_PRODUCTION_FUNCTION;
 
 const Chat = () => {
-  const [chat, setChat] = useState([]);
-  const latestChat = useRef(null);
   const location = useLocation();
-  const query = queryString.parse(location.search);
+  const query = queryString.parse(location.search, { decode: false });
+  console.log("query", query.settings);
 
-  latestChat.current = chat;
   useEffect(() => {
     const connection = new HubConnectionBuilder()
       .withUrl(`${FunctionURL}`)
+      .configureLogging(LogLevel.Information)
+      .withAutomaticReconnect()
       .build();
 
     connection.on("newMessage", (message) => {
       console.log("ReceiveMessage", message);
-      const updatedChat = [...latestChat.current];
-      updatedChat.push(message);
-      setChat(updatedChat);
     });
 
     connection
@@ -42,12 +38,27 @@ const Chat = () => {
       .catch((e) => console.log("Connection failed: ", e));
   }, [query.uuid]);
 
-  const sendMessage = async (user, message) => {
+  const sendMessage = async (position, message) => {
     try {
       return await axios.post(`${FunctionURL}/messages`, {
-        sender: user,
+        sender: query.uuid,
+        targetInput: position,
         text: message,
-        uuid: query.uuid,
+      });
+    } catch (e) {
+      console.log("Sending message failed.", e);
+    }
+  };
+
+  const sendRadioButtonChecked = async (
+    targetRadioGroup,
+    targetRadioButton
+  ) => {
+    try {
+      return await axios.post(`${FunctionURL}/radiogroup`, {
+        sender: query.uuid,
+        targetRadioGroup: targetRadioGroup,
+        targetRadioButton: targetRadioButton,
       });
     } catch (e) {
       console.log("Sending message failed.", e);
@@ -55,22 +66,46 @@ const Chat = () => {
   };
 
   const DisplayInputs = () => {
-    const inputArray = Array.from(Array(Number(query.amount)));
-    return inputArray.map((_, index) => {
-      return <ChatInput key={index} sendMessage={sendMessage} />;
+    const keyForCryptoJS = CryptoJS.enc.Base64.parse(
+      "UFJJVkFURUtFWUJPQVJEUw=="
+    );
+    const decodeBase64 = CryptoJS.enc.Base64.parse(query.settings);
+
+    const decryptedData = CryptoJS.AES.decrypt(
+      {
+        ciphertext: decodeBase64,
+      },
+      keyForCryptoJS,
+      {
+        mode: CryptoJS.mode.ECB,
+      }
+    );
+
+    const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
+    const inputArray = JSON.parse(decryptedText);
+    console.log(inputArray);
+
+    return inputArray.map((inputSetting, index) => {
+      return (
+        <ChatInput
+          inputSetting={inputSetting}
+          key={index}
+          position={index}
+          sendMessage={sendMessage}
+          sendRadioButtonChecked={sendRadioButtonChecked}
+        />
+      );
     });
   };
 
-  const hasEnoughRequiredQuery =
-    query.amount && Number(query.amount) > 0 && query.uuid;
+  const hasEnoughRequiredQuery = query.settings && query.uuid;
 
   return (
     <>
       {hasEnoughRequiredQuery && (
         <div>
+          <h1>Connected!</h1>
           <DisplayInputs />
-          <hr />
-          <ChatWindow chat={chat} />
         </div>
       )}
     </>

@@ -1,44 +1,93 @@
-import React, { useState } from "react";
+import React from "react";
+import "./ChatInput.css";
 
-const ChatInput = (props) => {
-  const [user, setUser] = useState("");
-  const [message, setMessage] = useState("");
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const isUserProvided = user && user !== "";
-    const isMessageProvided = message && message !== "";
+const ChatInput = ({
+  inputSetting,
+  sendMessage,
+  sendRadioButtonChecked,
+  position,
+}) => {
+  let message = "";
+  let timer = null;
 
-    if (isUserProvided && isMessageProvided) {
-      props.sendMessage(user, message);
-    } else {
-      alert("Please insert an user and a message.");
-    }
-  };
-  const onUserUpdate = (e) => {
-    setUser(e.target.value);
-  };
   const onMessageUpdate = (e) => {
-    setMessage(e.target.value);
+    message = e.target.value;
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => {
+      sendMessage(position, message);
+    }, 250);
   };
+
+  const onRadioButtonUpdate = (index) => {
+    sendRadioButtonChecked(position, index);
+  };
+
+  console.log("inputSetting", inputSetting);
   return (
-    <form onSubmit={onSubmit}>
-      <label htmlFor="user">User:</label>
-      <br />
-      <input id="user" name="user" value={user} onChange={onUserUpdate} />
-      <br />
-      <label htmlFor="message">Message:</label>
-      <br />
-      <input
-        type="text"
-        id="message"
-        name="message"
-        value={message}
-        onChange={onMessageUpdate}
-      />
-      <br />
-      <br />
-      <button>Submit</button>
-    </form>
+    <div className="form-input">
+      <>
+        <label className="label-input" htmlFor={inputSetting.label}>
+          {inputSetting.label}:
+        </label>
+        {inputSetting.type === "text" && (
+          <input
+            className="input-message"
+            type={inputSetting.type}
+            placeholder={inputSetting.placeholder}
+            id={inputSetting.label}
+            name="message"
+            onChange={(e) => {
+              onMessageUpdate(e);
+            }}
+          />
+        )}
+        {inputSetting.type === "email" && (
+          <input
+            className="input-message"
+            type={inputSetting.type}
+            placeholder={inputSetting.placeholder}
+            id={inputSetting.label}
+            pattern={"[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,}$"}
+            name="message"
+            onChange={(e) => {
+              onMessageUpdate(e);
+            }}
+          />
+        )}
+        {inputSetting.type === "tel" && (
+          <input
+            className="input-message"
+            type="tel"
+            maxLength="10"
+            placeholder={inputSetting.placeholder}
+            id={inputSetting.label}
+            name="message"
+            onChange={(e) => {
+              onMessageUpdate(e);
+            }}
+          />
+        )}
+        {inputSetting.type === "radio" && (
+          <>
+            {inputSetting.radioButtons.map((setting, index) => (
+              <div key={index}>
+                <input
+                  type="radio"
+                  id={setting.label}
+                  name={inputSetting.group}
+                  defaultChecked={setting.isChecked}
+                  value={setting.label}
+                  onChange={() => onRadioButtonUpdate(index)}
+                />
+                <label htmlFor={setting.label}>{setting.label}</label>
+              </div>
+            ))}
+          </>
+        )}
+      </>
+    </div>
   );
 };
 
