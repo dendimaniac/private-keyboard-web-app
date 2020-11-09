@@ -50,6 +50,21 @@ const Chat = () => {
     }
   };
 
+  const sendRadioButtonChecked = async (
+    targetRadioGroup,
+    targetRadioButton
+  ) => {
+    try {
+      return await axios.post(`${FunctionURL}/radiogroup`, {
+        sender: query.uuid,
+        targetRadioGroup: targetRadioGroup,
+        targetRadioButton: targetRadioButton,
+      });
+    } catch (e) {
+      console.log("Sending message failed.", e);
+    }
+  };
+
   const DisplayInputs = () => {
     const keyForCryptoJS = CryptoJS.enc.Base64.parse(
       "UFJJVkFURUtFWUJPQVJEUw=="
@@ -68,6 +83,7 @@ const Chat = () => {
 
     const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
     const inputArray = JSON.parse(decryptedText);
+    console.log(inputArray);
 
     return inputArray.map((inputSetting, index) => {
       return (
@@ -76,6 +92,7 @@ const Chat = () => {
           key={index}
           position={index}
           sendMessage={sendMessage}
+          sendRadioButtonChecked={sendRadioButtonChecked}
         />
       );
     });
