@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 import CryptoJS from "crypto-js";
-import ChatInput from "./ChatInput";
+
+import ChatInput from "./ChatInput/index.jsx";
+import DiscreteSlider from "../components/DiscreteSlider/index.jsx";
 
 const FunctionURL =
   process.env.NODE_ENV === "development"
@@ -102,6 +104,9 @@ const Chat = () => {
 
   return (
     <>
+      {/* testing */}
+      <DiscreteSlider />
+      {/* testing */}
       {hasEnoughRequiredQuery && (
         <div>
           <h1>Connected!</h1>
