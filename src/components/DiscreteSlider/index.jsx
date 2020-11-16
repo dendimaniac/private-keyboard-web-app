@@ -1,7 +1,7 @@
-import React from 'react';
-import Slider from '@material-ui/core/Slider';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import React from "react";
+import Slider from "@material-ui/core/Slider";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles({
   root: {
@@ -12,8 +12,18 @@ const useStyles = makeStyles({
 function valuetext(value) {
   return `${value}°`;
 }
-export default function DiscreteSlider() {
+
+let currentSliderValue = 30;
+
+export default function DiscreteSlider({ updateTiltAngle }) {
   const classes = useStyles();
+
+  const handleSliderChange = (_, value) => {
+    if (value === currentSliderValue) return;
+
+    currentSliderValue = value;
+    updateTiltAngle(value);
+  };
 
   return (
     <div className={classes.root}>
@@ -21,7 +31,7 @@ export default function DiscreteSlider() {
         Tilt adjustment
       </Typography>
       <Slider
-        defaultValue={30}
+        defaultValue={currentSliderValue}
         getAriaValueText={valuetext}
         aria-labelledby="discrete-slider"
         valueLabelDisplay="auto"
@@ -29,6 +39,7 @@ export default function DiscreteSlider() {
         marks
         min={10}
         max={110}
+        onChange={handleSliderChange}
       />
     </div>
   );
