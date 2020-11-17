@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
 import queryString from "query-string";
 import CryptoJS from "crypto-js";
-import ChatInput from "./ChatInput";
+
+import ChatInput from "./ChatInput/index.jsx";
+import DiscreteSlider from "../components/DiscreteSlider/index.jsx";
 
 const FunctionURL =
   process.env.NODE_ENV === "development"
@@ -23,7 +25,7 @@ const Chat = () => {
       .withAutomaticReconnect()
       .build();
 
-    connection.on("newMessage", (message) => {
+    connection.on("sendInputField", (message) => {
       console.log("ReceiveMessage", message);
     });
 
@@ -32,7 +34,7 @@ const Chat = () => {
       .then(() => {
         console.log("Connected!");
         if (query.uuid) {
-          axios.post(`${FunctionURL}/confirmqrscan`, { uuid: query.uuid });
+          axios.post(`${FunctionURL}/confirmQRScan`, { uuid: query.uuid });
         }
       })
       .catch((e) => console.log("Connection failed: ", e));
@@ -40,7 +42,7 @@ const Chat = () => {
 
   const sendMessage = async (position, message) => {
     try {
-      return await axios.post(`${FunctionURL}/messages`, {
+      return await axios.post(`${FunctionURL}/sendInputField`, {
         sender: query.uuid,
         targetInput: position,
         text: message,
@@ -55,10 +57,22 @@ const Chat = () => {
     targetRadioButton
   ) => {
     try {
-      return await axios.post(`${FunctionURL}/radiogroup`, {
+      return await axios.post(`${FunctionURL}/selectRadioGroup`, {
         sender: query.uuid,
         targetRadioGroup: targetRadioGroup,
         targetRadioButton: targetRadioButton,
+      });
+    } catch (e) {
+      console.log("Sending message failed.", e);
+    }
+  };
+
+  const updateTiltAngle = async (value) => {
+    console.log(value);
+    try {
+      return await axios.post(`${FunctionURL}/updateTiltAngle`, {
+        sender: query.uuid,
+        value: value,
       });
     } catch (e) {
       console.log("Sending message failed.", e);
@@ -102,6 +116,8 @@ const Chat = () => {
 
   return (
     <>
+      <DiscreteSlider updateTiltAngle={updateTiltAngle} />
+
       {hasEnoughRequiredQuery && (
         <div>
           <h1>Connected!</h1>
