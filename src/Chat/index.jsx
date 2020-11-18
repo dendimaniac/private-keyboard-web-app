@@ -68,7 +68,7 @@ const Chat = () => {
   };
 
   const updateTiltAngle = async (value) => {
-    console.log(value);
+    console.log("tilt angle", value);
     try {
       return await axios.post(`${FunctionURL}/updateTiltAngle`, {
         sender: query.uuid,
@@ -97,14 +97,14 @@ const Chat = () => {
 
     const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
     const inputArray = JSON.parse(decryptedText);
-    console.log(inputArray);
+    console.log("inputArray", inputArray);
 
-    return inputArray.map((inputSetting, index) => {
+    return inputArray.map((inputSetting) => {
       return (
         <ChatInput
           inputSetting={inputSetting}
-          key={index}
-          position={index}
+          key={inputSetting.position}
+          position={inputSetting.position}
           sendMessage={sendMessage}
           sendRadioButtonChecked={sendRadioButtonChecked}
         />
@@ -116,12 +116,11 @@ const Chat = () => {
 
   return (
     <>
-      <DiscreteSlider updateTiltAngle={updateTiltAngle} />
-
       {hasEnoughRequiredQuery && (
         <div>
           <h1>Connected!</h1>
           <DisplayInputs />
+          <DiscreteSlider updateTiltAngle={updateTiltAngle} />
         </div>
       )}
     </>
