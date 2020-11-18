@@ -79,6 +79,18 @@ const Chat = () => {
     }
   };
 
+  const takePicture = async (value) => {
+    console.log("isTakingPicture",value)
+    try {
+      return await axios.post(`${FunctionURL}/takePicture`, {
+        sender: query.uuid,
+        value: value,
+      });
+    } catch (e) {
+      console.log("Sending message failed.", e);
+    }
+  };
+
   const DisplayInputs = () => {
     const keyForCryptoJS = CryptoJS.enc.Base64.parse(
       "UFJJVkFURUtFWUJPQVJEUw=="
@@ -121,6 +133,7 @@ const Chat = () => {
           <h1>Connected!</h1>
           <DisplayInputs />
           <DiscreteSlider updateTiltAngle={updateTiltAngle} />
+          <button onClick={() => takePicture(true)}>Take a picture</button>
         </div>
       )}
     </>
