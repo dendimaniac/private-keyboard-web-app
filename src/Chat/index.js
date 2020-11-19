@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
+import React, {useEffect} from "react";
+import {HubConnectionBuilder, LogLevel} from "@microsoft/signalr";
 import axios from "axios";
-import { useLocation } from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import queryString from "query-string";
 import CryptoJS from "crypto-js";
 import ChatInput from "./ChatInput";
@@ -13,8 +13,7 @@ const FunctionURL =
 
 const Chat = () => {
   const location = useLocation();
-  const query = queryString.parse(location.search, { decode: false });
-  console.log("query", query.settings);
+  const query = queryString.parse(location.search, {decode: false});
 
   useEffect(() => {
     const connection = new HubConnectionBuilder()
@@ -32,19 +31,35 @@ const Chat = () => {
       .then(() => {
         console.log("Connected!");
         if (query.uuid) {
-          axios.post(`${FunctionURL}/confirmqrscan`, { uuid: query.uuid });
+          axios.post(`${FunctionURL}/confirmqrscan`, {uuid: query.uuid});
         }
       })
       .catch((e) => console.log("Connection failed: ", e));
   }, [query.uuid]);
 
   const sendMessage = async (position, message) => {
+    let formData = {};
+
     try {
-      return await axios.post(`${FunctionURL}/messages`, {
-        sender: query.uuid,
-        targetInput: position,
-        text: message,
-      });
+      if (message.type === 'file') {
+        formData = new FormData();
+        formData.append('file', message.file);
+        const res = await axios.post(`${FunctionURL}/messages`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+        });
+        console.log(res);
+        return res;
+      } else {
+        const res = await axios.post(`${FunctionURL}/messages`, {
+          sender: query.uuid,
+          targetInput: position,
+          text: message,
+        });
+        console.log(res);
+        return res;
+      }
     } catch (e) {
       console.log("Sending message failed.", e);
     }
@@ -83,7 +98,6 @@ const Chat = () => {
 
     const decryptedText = decryptedData.toString(CryptoJS.enc.Utf8);
     const inputArray = JSON.parse(decryptedText);
-    console.log(inputArray);
 
     return inputArray.map((inputSetting, index) => {
       return (
