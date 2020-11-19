@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import axios from "axios";
@@ -14,6 +14,7 @@ const FunctionURL =
     : process.env.REACT_APP_PRODUCTION_FUNCTION;
 
 const Chat = () => {
+  const [cameraStatus, setCameraStatus] = useState("off");
   const location = useLocation();
   const query = queryString.parse(location.search, { decode: false });
   console.log("query", query.settings);
@@ -80,7 +81,7 @@ const Chat = () => {
   };
 
   const takePicture = async (value) => {
-    console.log("isTakingPicture",value)
+    console.log("isTakingPicture", value);
     try {
       return await axios.post(`${FunctionURL}/takePicture`, {
         sender: query.uuid,
@@ -88,6 +89,21 @@ const Chat = () => {
       });
     } catch (e) {
       console.log("Sending message failed.", e);
+    }
+  };
+
+  const handleTakePictureBtn = (status) => {
+    if(status === "on"){
+      takePicture(status)
+      setCameraStatus(status)
+    }
+    if(status === "capture"){
+      takePicture(status)
+      setCameraStatus("off")
+    }
+    if(status === "cancel"){
+      takePicture(status)
+      setCameraStatus("off")
     }
   };
 
@@ -125,7 +141,7 @@ const Chat = () => {
   };
 
   const hasEnoughRequiredQuery = query.settings && query.uuid;
-
+  console.log("camerastatus", cameraStatus)
   return (
     <>
       {hasEnoughRequiredQuery && (
@@ -133,7 +149,15 @@ const Chat = () => {
           <h1>Connected!</h1>
           <DisplayInputs />
           <DiscreteSlider updateTiltAngle={updateTiltAngle} />
-          <button onClick={() => takePicture(true)}>Take a picture</button>
+          {cameraStatus === "off" && (
+            <button onClick={()=>handleTakePictureBtn("on")}>Take a picture</button>
+          )}
+          {cameraStatus === "on" && (
+            <>
+            <button onClick={()=>handleTakePictureBtn("capture")}>Capture</button>
+            <button onClick={()=>handleTakePictureBtn("cancel")}>Cancel</button>
+            </>
+          )}
         </div>
       )}
     </>
