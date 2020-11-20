@@ -99,7 +99,11 @@ const Chat = () => {
     }
     if(status === "capture"){
       takePicture(status)
-      setCameraStatus("off")
+      // setCameraStatus("off")
+    }
+    if(status === "retake"){
+      takePicture(status)
+      setCameraStatus("on")
     }
     if(status === "cancel"){
       takePicture(status)
@@ -155,6 +159,7 @@ const Chat = () => {
           {cameraStatus === "on" && (
             <>
             <button onClick={()=>handleTakePictureBtn("capture")}>Capture</button>
+            <button onClick={()=>handleTakePictureBtn("retake")}>Retake</button>
             <button onClick={()=>handleTakePictureBtn("cancel")}>Cancel</button>
             </>
           )}
