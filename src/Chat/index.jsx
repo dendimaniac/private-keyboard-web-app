@@ -15,6 +15,7 @@ const FunctionURL =
 
 const Chat = () => {
   const [cameraStatus, setCameraStatus] = useState("off");
+  const [isCapture, setIsCapture] = useState(false);
   const location = useLocation();
   const query = queryString.parse(location.search, { decode: false });
   console.log("query", query.settings);
@@ -93,21 +94,28 @@ const Chat = () => {
   };
 
   const handleTakePictureBtn = (status) => {
-    if(status === "on"){
-      takePicture(status)
-      setCameraStatus(status)
+    if (status === "on") {
+      takePicture(status);
+      setCameraStatus(status);
     }
-    if(status === "capture"){
-      takePicture(status)
-      // setCameraStatus("off")
+    if (status === "capture") {
+      takePicture(status);
+      setIsCapture(true);
     }
-    if(status === "retake"){
-      takePicture(status)
-      setCameraStatus("on")
+    if (status === "confirm") {
+      takePicture(status);
+      setIsCapture(false);
+      setCameraStatus("off");
     }
-    if(status === "cancel"){
-      takePicture(status)
-      setCameraStatus("off")
+    if (status === "retake") {
+      takePicture(status);
+      setCameraStatus("on");
+      setIsCapture(false);
+    }
+    if (status === "cancel") {
+      takePicture(status);
+      setIsCapture(false);
+      setCameraStatus("off");
     }
   };
 
@@ -145,7 +153,7 @@ const Chat = () => {
   };
 
   const hasEnoughRequiredQuery = query.settings && query.uuid;
-  console.log("camerastatus", cameraStatus)
+  console.log("camerastatus", cameraStatus);
   return (
     <>
       {hasEnoughRequiredQuery && (
@@ -154,13 +162,30 @@ const Chat = () => {
           <DisplayInputs />
           <DiscreteSlider updateTiltAngle={updateTiltAngle} />
           {cameraStatus === "off" && (
-            <button onClick={()=>handleTakePictureBtn("on")}>Take a picture</button>
+            <button onClick={() => handleTakePictureBtn("on")}>
+              Take a picture
+            </button>
           )}
           {cameraStatus === "on" && (
             <>
-            <button onClick={()=>handleTakePictureBtn("capture")}>Capture</button>
-            <button onClick={()=>handleTakePictureBtn("retake")}>Retake</button>
-            <button onClick={()=>handleTakePictureBtn("cancel")}>Cancel</button>
+              {!isCapture && (
+                <button onClick={() => handleTakePictureBtn("capture")}>
+                  Capture
+                </button>
+              )}
+              {isCapture && (
+                <>
+                  <button onClick={() => handleTakePictureBtn("confirm")}>
+                    Confirm
+                  </button>
+                  <button onClick={() => handleTakePictureBtn("retake")}>
+                    Retake
+                  </button>
+                </>
+              )}
+              <button onClick={() => handleTakePictureBtn("cancel")}>
+                Cancel
+              </button>
             </>
           )}
         </div>
