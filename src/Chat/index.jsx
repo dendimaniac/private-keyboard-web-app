@@ -8,6 +8,7 @@ import CryptoJS from "crypto-js";
 import ChatInput from "./ChatInput/index.jsx";
 import DiscreteSlider from "../components/DiscreteSlider/index.jsx";
 import TakingPictureBtn from "../components/TakingPictureBtn/index.jsx";
+import "./chat.css";
 
 const FunctionURL =
   process.env.NODE_ENV === "development"
@@ -130,7 +131,7 @@ const Chat = () => {
     <>
       {hasEnoughRequiredQuery && (
         <div>
-          <h1>Connected!</h1>
+          <h1 className="app__title">Connected!</h1>
           <DisplayInputs />
           <DiscreteSlider updateTiltAngle={updateTiltAngle} />
           <TakingPictureBtn takePicture={takePicture} />

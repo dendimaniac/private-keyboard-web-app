@@ -1,9 +1,18 @@
-.App{
+.App {
     font-size: 20px;
     font-weight: bold;
+    width: 60%;
+    margin: auto;
 }
 
-h1{
+h1 {
     text-align: center;
+    padding-top: 20px;
+}
+
+#discrete-slider {
+    font-family: "Trispace", sans-serif;
+    font-weight: bold;
+    font-size: 20px;
     padding-top: 20px;
 }

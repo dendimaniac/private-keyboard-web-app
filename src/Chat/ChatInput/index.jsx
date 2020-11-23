@@ -27,7 +27,6 @@ const ChatInput = ({
   console.log("inputSetting", inputSetting);
   return (
     <div className="form-input">
-      <>
         <label className="label-input" htmlFor={inputSetting.label}>
           {inputSetting.label}:
         </label>
@@ -86,7 +85,6 @@ const ChatInput = ({
             ))}
           </>
         )}
-      </>
     </div>
   );
 };

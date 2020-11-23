@@ -1,0 +1,9 @@
+.button__container {
+  padding-top: 20px;
+}
+
+div.button__container > button {
+  font-family: "Trispace", sans-serif;
+  padding: 10px 4px;
+  margin-right: 20px;
+}

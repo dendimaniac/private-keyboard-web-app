@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+import "./takingPictureBtn.css"
+
 export default function TakingPictureBtn({ takePicture }) {
   const [cameraStatus, setCameraStatus] = useState("off");
   const [isCapture, setIsCapture] = useState(false);
@@ -30,7 +32,7 @@ export default function TakingPictureBtn({ takePicture }) {
     }
   };
   return (
-    <div>
+    <div className="button__container">
       {cameraStatus === "off" && (
         <button onClick={() => handleTakePictureBtn("on")}>
           Take a picture
