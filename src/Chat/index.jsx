@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import axios from "axios";
@@ -7,6 +7,7 @@ import CryptoJS from "crypto-js";
 
 import ChatInput from "./ChatInput/index.jsx";
 import DiscreteSlider from "../components/DiscreteSlider/index.jsx";
+import TakingPictureBtn from "../components/TakingPictureBtn/index.jsx";
 
 const FunctionURL =
   process.env.NODE_ENV === "development"
@@ -14,8 +15,6 @@ const FunctionURL =
     : process.env.REACT_APP_PRODUCTION_FUNCTION;
 
 const Chat = () => {
-  const [cameraStatus, setCameraStatus] = useState("off");
-  const [isCapture, setIsCapture] = useState(false);
   const location = useLocation();
   const query = queryString.parse(location.search, { decode: false });
   console.log("query", query.settings);
@@ -93,32 +92,6 @@ const Chat = () => {
     }
   };
 
-  const handleTakePictureBtn = (status) => {
-    if (status === "on") {
-      takePicture(status);
-      setCameraStatus(status);
-    }
-    if (status === "capture") {
-      takePicture(status);
-      setIsCapture(true);
-    }
-    if (status === "confirm") {
-      takePicture(status);
-      setIsCapture(false);
-      setCameraStatus("off");
-    }
-    if (status === "retake") {
-      takePicture(status);
-      setCameraStatus("on");
-      setIsCapture(false);
-    }
-    if (status === "cancel") {
-      takePicture(status);
-      setIsCapture(false);
-      setCameraStatus("off");
-    }
-  };
-
   const DisplayInputs = () => {
     const keyForCryptoJS = CryptoJS.enc.Base64.parse(
       "UFJJVkFURUtFWUJPQVJEUw=="
@@ -153,7 +126,6 @@ const Chat = () => {
   };
 
   const hasEnoughRequiredQuery = query.settings && query.uuid;
-  console.log("camerastatus", cameraStatus);
   return (
     <>
       {hasEnoughRequiredQuery && (
@@ -161,33 +133,7 @@ const Chat = () => {
           <h1>Connected!</h1>
           <DisplayInputs />
           <DiscreteSlider updateTiltAngle={updateTiltAngle} />
-          {cameraStatus === "off" && (
-            <button onClick={() => handleTakePictureBtn("on")}>
-              Take a picture
-            </button>
-          )}
-          {cameraStatus === "on" && (
-            <>
-              {!isCapture && (
-                <button onClick={() => handleTakePictureBtn("capture")}>
-                  Capture
-                </button>
-              )}
-              {isCapture && (
-                <>
-                  <button onClick={() => handleTakePictureBtn("confirm")}>
-                    Confirm
-                  </button>
-                  <button onClick={() => handleTakePictureBtn("retake")}>
-                    Retake
-                  </button>
-                </>
-              )}
-              <button onClick={() => handleTakePictureBtn("cancel")}>
-                Cancel
-              </button>
-            </>
-          )}
+          <TakingPictureBtn takePicture={takePicture} />
         </div>
       )}
     </>
