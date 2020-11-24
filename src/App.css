@@ -16,3 +16,9 @@ h1 {
     font-size: 20px;
     padding-top: 20px;
 }
+button {
+    font-family: "Trispace", sans-serif;
+    padding: 10px 4px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}

@@ -81,10 +81,9 @@ const Chat = () => {
     }
   };
 
-  const takePicture = async (value) => {
-    console.log("isTakingPicture", value);
+  const pressButton = async (value) => {
     try {
-      return await axios.post(`${FunctionURL}/takePicture`, {
+      return await axios.post(`${FunctionURL}/pressButton`, {
         sender: query.uuid,
         value: value,
       });
@@ -134,7 +133,10 @@ const Chat = () => {
           <h1 className="app__title">Connected!</h1>
           <DisplayInputs />
           <DiscreteSlider updateTiltAngle={updateTiltAngle} />
-          <TakingPictureBtn takePicture={takePicture} />
+          <TakingPictureBtn takePicture={pressButton} />
+          <button onClick={() => pressButton("sendEmail")}>
+            Send Info to Email
+          </button>
         </div>
       )}
     </>
