@@ -13,7 +13,7 @@ describe("<ChatInput /> ", () => {
   const props = {
     inputSetting: inputSetting,
   };
-  const chatInput = shallow(<ChatInput {...props} />);
+  // const chatInput = shallow(<ChatInput {...props} />);
   
   it("renders without crashing given the required props", () => {
     shallow(<ChatInput {...props} />);

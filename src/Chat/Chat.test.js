@@ -12,7 +12,7 @@ jest.mock("react-router-dom", () => ({
 
 
 describe("<Chat />", () => {
-  const chat = shallow(<Chat />);
+  // const chat = shallow(<Chat />);
   
   it("renders without crashing", () => {
     shallow(<Chat />);
