@@ -24,3 +24,9 @@ button {
     padding: 8px 12px;
     border: none;
 }
+button:hover{
+    cursor: pointer;
+}
+button:active{
+    background-color: #F7797D;
+}
