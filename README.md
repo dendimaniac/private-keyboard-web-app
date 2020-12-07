@@ -1,4 +1,9 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Install the environment
+In the project directory, you can create an .env file as the following instruction:
+```
+REACT_APP_DEVELOPMENT_FUNCTION = Your Azure function url
+REACT_APP_PRODUCTION_FUNCTION = Your web application url
+```
 
 ## Available Scripts
 
