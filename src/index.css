@@ -1,19 +1,7 @@
-@keyframes bganimation {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
 body {
   margin: 0;
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #C471ED, #F7797D, #C471ED);
-  animation: bganimation 15s infinite;
+  background: white;
 }
