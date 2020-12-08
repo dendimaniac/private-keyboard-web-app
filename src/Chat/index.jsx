@@ -91,10 +91,10 @@ const Chat = () => {
       console.log("Sending message failed.", e);
     }
   };
-
+  console.log("process.env.CRYPTO_KEY", process.env.REACT_APP_CRYPTO_KEY);
   const DisplayInputs = () => {
     const keyForCryptoJS = CryptoJS.enc.Base64.parse(
-      process.env.CRYTO_KEY
+      process.env.REACT_APP_CRYPTO_KEY
     );
     const decodeBase64 = CryptoJS.enc.Base64.parse(query.settings);
 

@@ -3,5 +3,5 @@ body {
   font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: lightblue;
+  background: linear-gradient(135deg, #C471ED, #F7797D, #C471ED);
 }
