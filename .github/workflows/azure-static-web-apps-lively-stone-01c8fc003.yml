@@ -20,7 +20,7 @@ jobs:
           submodules: true
       - run: npm install
       - run: npm audit fix
-      - run: touch .env | echo "${{ secrets.PRODUCTION_FUNCTION_URL }}" >> .env
+      - run: touch .env | echo "${{ secrets.PRODUCTION_FUNCTION_URL }}" | echo "\n" | echo "${{ secrets.CRYPTO_KEY }}" >> .env
       - run: npm run build
       - name: Deploy
         id: builddeploy
