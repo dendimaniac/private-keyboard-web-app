@@ -94,7 +94,7 @@ const Chat = () => {
 
   const DisplayInputs = () => {
     const keyForCryptoJS = CryptoJS.enc.Base64.parse(
-      "UFJJVkFURUtFWUJPQVJEUw=="
+      process.env.CRYTO_KEY
     );
     const decodeBase64 = CryptoJS.enc.Base64.parse(query.settings);
 
