@@ -41,21 +41,21 @@ export default function TakingPictureBtn({ takePicture }) {
       {cameraStatus === "on" && (
         <>
           {!isCapture && (
-            <button onClick={() => handleTakePictureBtn("capture")}>
+            <button className="button__capture" onClick={() => handleTakePictureBtn("capture")}>
               Capture
             </button>
           )}
           {isCapture && (
             <>
-              <button onClick={() => handleTakePictureBtn("confirm")}>
+              <button className="button__confirm" onClick={() => handleTakePictureBtn("confirm")}>
                 Confirm
               </button>
-              <button onClick={() => handleTakePictureBtn("retake")}>
+              <button className="button__retake" onClick={() => handleTakePictureBtn("retake")}>
                 Retake
               </button>
             </>
           )}
-          <button onClick={() => handleTakePictureBtn("cancel")}>Cancel</button>
+          <button className="button__cancel" onClick={() => handleTakePictureBtn("cancel")}>Cancel</button>
         </>
       )}
     </div>
